@@ -3,11 +3,17 @@ package com.ljw.week1
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.focusModifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -20,28 +26,51 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             Week1Theme {
-                myApp()
+                myApp(listOf("World", "Compose"))
             }
         }
     }
 }
 
 @Composable
-fun myApp() {
-    Surface(color = MaterialTheme.colors.primary) {
-        Greeting("Android")
+fun myApp(names: List<String>) {
+    Column(modifier = Modifier.padding(vertical = 4.dp)) {
+        for (name in names) {
+            Greeting(name)
+        }
     }
 }
 
 @Composable
 fun Greeting(name: String) {
-    Text(text = "Hello $name!", modifier = Modifier.padding(24.dp))
+    val expanded = remember { mutableStateOf(false) }
+    val extraPadding = if (expanded.value) 48.dp else 0.dp
+
+    Surface(
+        color = MaterialTheme.colors.primary,
+        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+    ) {
+        Row(modifier = Modifier.padding(24.dp)) {
+            Column(
+                modifier = Modifier
+                    .weight(1F)
+                    .padding(bottom = extraPadding)
+            ) {
+                Text(text = "Hello,")
+                Text(text = "$name!")
+            }
+
+            OutlinedButton(onClick = { expanded.value = !expanded.value }) {
+                Text(if (expanded.value) "Show less" else "Show more")
+            }
+        }
+    }
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, widthDp = 320)
 @Composable
 fun DefaultPreview() {
     Week1Theme {
-        myApp()
+        myApp(listOf("World", "Compose"))
     }
 }
