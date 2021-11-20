@@ -41,6 +41,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.codelab.theming.R
@@ -53,7 +54,6 @@ import java.util.Locale
 fun Home() {
     val featured = remember { PostRepo.getFeaturedPost() }
     val posts = remember { PostRepo.getPosts() }
-
     JetnewsTheme {
         Scaffold(
             topBar = { AppBar() }
@@ -109,10 +109,9 @@ fun Header(
     ) {
         Text(
             text = text,
-            modifier = modifier
+            style = MaterialTheme.typography.subtitle2,
+            modifier = Modifier
                 .fillMaxWidth()
-                .background(Color.LightGray)
-                .semantics { heading() }
                 .padding(horizontal = 16.dp, vertical = 8.dp)
         )
     }
@@ -142,10 +141,12 @@ fun FeaturedPost(
             val padding = Modifier.padding(horizontal = 16.dp)
             Text(
                 text = post.title,
+                style = MaterialTheme.typography.h6,
                 modifier = padding
             )
             Text(
                 text = post.metadata.author.name,
+                style = MaterialTheme.typography.body2,
                 modifier = padding
             )
             PostMetadata(post, padding)
@@ -166,17 +167,23 @@ private fun PostMetadata(
         append(divider)
         append(stringResource(R.string.read_time, post.metadata.readTimeMinutes))
         append(divider)
+        val tagStyle = MaterialTheme.typography.overline.toSpanStyle().copy(
+            background = MaterialTheme.colors.primary.copy(alpha = 0.1f)
+        )
         post.tags.forEachIndexed { index, tag ->
             if (index != 0) {
                 append(tagDivider)
             }
-            append(" ${tag.uppercase(Locale.getDefault())} ")
+            withStyle(tagStyle) {
+                append(" ${tag.uppercase(Locale.getDefault())} ")
+            }
         }
     }
 
     CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
         Text(
             text = text,
+            style = MaterialTheme.typography.body2,
             modifier = modifier
         )
     }
@@ -207,33 +214,34 @@ fun PostItem(
     )
 }
 
-//@Preview("Post Item")
-//@Composable
-//private fun PostItemPreview() {
-//    val post = remember { PostRepo.getFeaturedPost() }
-//    Surface {
-//        PostItem(post = post)
-//    }
-//}
+@Preview("Post Item")
+@Composable
+private fun PostItemPreview() {
+    val post = remember { PostRepo.getFeaturedPost() }
+    JetnewsTheme {
+        Surface {
+            PostItem(post = post)
+        }
+    }
+}
 
-//@Preview("Featured Post")
-//@Composable
-//private fun FeaturedPostPreview() {
-//    val post = remember { PostRepo.getFeaturedPost() }
-//
-//    JetnewsTheme {
-//        FeaturedPost(post = post)
-//    }
-//}
-//
-//@Preview("Featured Post • Dark")
-//@Composable
-//private fun FeaturedPostDarkPreview() {
-//    val post = remember { PostRepo.getFeaturedPost() }
-//    JetnewsTheme(darkTheme = true) {
-//        FeaturedPost(post = post)
-//    }
-//}
+@Preview("Featured Post")
+@Composable
+private fun FeaturedPostPreview() {
+    val post = remember { PostRepo.getFeaturedPost() }
+    JetnewsTheme {
+        FeaturedPost(post = post)
+    }
+}
+
+@Preview("Featured Post • Dark")
+@Composable
+private fun FeaturedPostDarkPreview() {
+    val post = remember { PostRepo.getFeaturedPost() }
+    JetnewsTheme(darkTheme = true) {
+        FeaturedPost(post = post)
+    }
+}
 
 @Preview("Home")
 @Composable
